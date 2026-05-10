@@ -1386,9 +1386,10 @@ async function editComment(commentId) {
   document.getElementById('menu-' + commentId)?.classList.remove('open');
   const textEl = document.getElementById('ct-' + commentId);
   const item = document.getElementById('ci-' + commentId);
-  const current = textEl.textContent;
+  // store original text in a data attribute to avoid escape issues
+  item.dataset.original = textEl.textContent;
   item.classList.add('editing');
-  textEl.innerHTML = `<textarea class="comment-edit-area" id="edit-${commentId}" rows="2">${current}</textarea><div class="comment-edit-actions"><button class="comment-edit-cancel" onclick="cancelEdit('${commentId}','${current.replace(/'/g,\"\\'\")}')">Cancelar</button><button class="comment-edit-save" onclick="saveEdit('${commentId}')">Salvar</button></div>`;
+  textEl.innerHTML = '<textarea class="comment-edit-area" id="edit-' + commentId + '" rows="2">' + textEl.textContent + '</textarea><div class="comment-edit-actions"><button class="comment-edit-cancel" onclick="cancelEdit(\'' + commentId + '\')">Cancelar</button><button class="comment-edit-save" onclick="saveEdit(\'' + commentId + '\')">Salvar</button></div>';
   document.getElementById('edit-' + commentId)?.focus();
 }
 
@@ -1400,9 +1401,10 @@ async function saveEdit(commentId) {
   catch(e) { alert('Erro ao editar: ' + e.message); }
 }
 
-function cancelEdit(commentId, original) {
-  const textEl = document.getElementById('ct-' + commentId);
+function cancelEdit(commentId) {
   const item = document.getElementById('ci-' + commentId);
+  const textEl = document.getElementById('ct-' + commentId);
+  const original = item.dataset.original || '';
   item.classList.remove('editing');
   textEl.innerHTML = original.replace(/@([\w\s]+?)(?=\s|$|@)/g,'<span class="mention">@$1</span>');
 }
