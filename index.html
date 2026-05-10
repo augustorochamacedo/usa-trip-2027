@@ -197,17 +197,39 @@ a.pill-link.warn   {background:rgba(232,164,34,.1);color:#7a5800;border:1px soli
 .comments-area.open{display:block;}
 .comments-inner{padding:16px;}
 .comment-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
-.comment-item{background:#f7f4ee;border-radius:8px;padding:10px 14px;}
-.comment-meta{font-size:11px;color:#aaa;margin-bottom:4px;display:flex;gap:8px;}
-.comment-meta strong{color:var(--dusk);}
-.comment-text{font-size:13px;color:#333;line-height:1.5;}
+.comment-item{background:#f7f4ee;border-radius:8px;padding:10px 14px;position:relative;}
+.comment-item.editing{background:#fff3e0;border:1px solid rgba(232,164,34,.4);}
+.comment-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;}
+.comment-meta{display:flex;align-items:center;gap:8px;}
+.comment-author{font-size:12px;font-weight:600;color:var(--dusk);}
+.comment-date{font-size:11px;color:#bbb;}
+.comment-menu-wrap{position:relative;}
+.comment-menu-btn{background:none;border:none;cursor:pointer;color:#ccc;font-size:13px;padding:2px 6px;border-radius:4px;transition:color .2s,background .2s;line-height:1;}
+.comment-menu-btn:hover{color:var(--dusk);background:rgba(44,62,107,.08);}
+.comment-dropdown{position:absolute;right:0;top:24px;background:#fff;border:1px solid #e8e0d0;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:130px;overflow:hidden;display:none;}
+.comment-dropdown.open{display:block;}
+.comment-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:9px 14px;background:none;border:none;font-size:12px;font-family:'DM Sans',sans-serif;cursor:pointer;color:#444;text-align:left;transition:background .15s;}
+.comment-dropdown button:hover{background:#f7f4ee;}
+.comment-dropdown button.del{color:#c0392b;}
+.comment-text{font-size:13px;color:#333;line-height:1.6;}
+.comment-text .mention{color:var(--clay);font-weight:600;}
+.comment-edit-area{width:100%;border:1px solid var(--dusk);border-radius:6px;padding:7px 10px;font-size:13px;font-family:'DM Sans',sans-serif;resize:none;outline:none;margin-top:6px;box-sizing:border-box;}
+.comment-edit-actions{display:flex;gap:6px;margin-top:6px;justify-content:flex-end;}
+.comment-edit-save{background:var(--dusk);color:#fff;border:none;border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;}
+.comment-edit-cancel{background:#eee;color:#666;border:none;border-radius:6px;padding:5px 14px;font-size:12px;cursor:pointer;}
 .comment-empty{font-size:13px;color:#bbb;text-align:center;padding:12px 0;}
+.comment-form-wrap{position:relative;}
 .comment-form{display:flex;gap:8px;margin-top:4px;}
 .comment-input{flex:1;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;}
 .comment-input:focus{border-color:var(--dusk);}
-.comment-send{background:var(--dusk);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;transition:background .2s;white-space:nowrap;}
+.comment-send{background:var(--dusk);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;transition:background .2s;white-space:nowrap;font-family:'DM Sans',sans-serif;}
 .comment-send:hover{background:var(--clay);}
 .comment-send:disabled{background:#ccc;cursor:not-allowed;}
+.mention-picker{position:absolute;bottom:48px;left:0;background:#fff;border:1px solid #e0d8cc;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:50;min-width:180px;overflow:hidden;display:none;}
+.mention-picker.open{display:block;}
+.mention-option{padding:8px 14px;font-size:13px;cursor:pointer;color:#333;transition:background .15s;display:flex;align-items:center;gap:8px;}
+.mention-option:hover{background:#f7f4ee;}
+.mention-option::before{content:'@';color:var(--clay);font-weight:600;}
 
 /* ── LOGIN PAGE ── */
 .login-page{min-height:100vh;display:flex;flex-wrap:wrap;}
@@ -1167,7 +1189,7 @@ footer span{color:var(--clay);}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDIiqVMyw3q_IDBqduSptLIuRMNoKrLoFI",
@@ -1196,6 +1218,7 @@ onAuthStateChanged(auth, user => {
     appContent.style.display = 'block';
     userBar.classList.add('visible');
     userBar.querySelector('.user-name').textContent = user.displayName || user.email;
+    startCommentListeners();
   } else {
     loginPage.style.display = 'flex';
     appContent.style.display = 'none';
@@ -1250,7 +1273,10 @@ document.getElementById('auth-btn').addEventListener('click', async () => {
   }
 });
 
-// ── INJECT COMMENT SECTIONS ──
+// ── COMMENT SYSTEM ──
+const unsubListeners = {};
+let allUsers = [];
+
 document.querySelectorAll('.day-card').forEach((card, index) => {
   const dayNum = index + 1;
   const dayId = 'dia-' + dayNum;
@@ -1258,45 +1284,77 @@ document.querySelectorAll('.day-card').forEach((card, index) => {
   const wrapper = document.createElement('div');
   wrapper.className = 'day-comments';
   wrapper.innerHTML = `
-    <button class="comments-toggle" onclick="toggleComments(this, '${dayId}')">
+    <button class="comments-toggle" onclick="toggleComments(this,'${dayId}')">
       💬 Sugestões do grupo para o Dia ${dayNum}
-      <span class="badge-count" id="badge-${dayId}"></span>
+      <span class="badge-count" id="badge-${dayId}" style="display:none"></span>
       <span class="toggle-icon">▾</span>
     </button>
     <div class="comments-area" id="comments-${dayId}">
       <div class="comments-inner">
-        <div class="comment-list" id="list-${dayId}"><div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div></div>
-        <div class="comment-form">
-          <input class="comment-input" id="input-${dayId}" placeholder="Digite sua sugestão..." />
-          <button class="comment-send" onclick="sendComment('${dayId}')">Enviar</button>
+        <div class="comment-list" id="list-${dayId}">
+          <div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div>
+        </div>
+        <div class="comment-form-wrap">
+          <div class="mention-picker" id="picker-${dayId}"></div>
+          <div class="comment-form">
+            <input class="comment-input" id="input-${dayId}" placeholder="Sua sugestão... use @ para mencionar" />
+            <button class="comment-send" onclick="sendComment('${dayId}')">Enviar</button>
+          </div>
         </div>
       </div>
     </div>`;
   dayRight.appendChild(wrapper);
 
-  // live listener para comentários deste dia
-  const q = query(collection(db, 'comments'), where('dayId', '==', dayId), orderBy('createdAt', 'asc'));
-  onSnapshot(q, snap => {
-    const list = document.getElementById('list-' + dayId);
-    const badge = document.getElementById('badge-' + dayId);
-    if (!list) return;
-    if (snap.empty) {
-      list.innerHTML = '<div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div>';
-      badge.style.display = 'none';
-    } else {
-      badge.textContent = snap.size;
-      badge.style.display = 'inline';
-      list.innerHTML = snap.docs.map(doc => {
-        const d = doc.data();
-        const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
-        return `<div class="comment-item">
-          <div class="comment-meta"><strong>${d.userName}</strong><span>${date}</span></div>
-          <div class="comment-text">${d.text}</div>
-        </div>`;
-      }).join('');
+  const input = wrapper.querySelector('.comment-input');
+  const picker = wrapper.querySelector('.mention-picker');
+  input.addEventListener('input', () => {
+    const val = input.value;
+    const atIdx = val.lastIndexOf('@');
+    if (atIdx !== -1) {
+      const search = val.slice(atIdx + 1).toLowerCase();
+      const matches = allUsers.filter(u => u.toLowerCase().includes(search) && u !== currentUser?.displayName);
+      if (matches.length) {
+        picker.innerHTML = matches.map(u => `<div class="mention-option" onclick="insertMention('${dayId}','${u}')">${u}</div>`).join('');
+        picker.classList.add('open');
+        return;
+      }
     }
+    picker.classList.remove('open');
   });
+  input.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendComment(dayId); } });
 });
+
+function startCommentListeners() {
+  document.querySelectorAll('.day-card').forEach((card, index) => {
+    const dayId = 'dia-' + (index + 1);
+    if (unsubListeners[dayId]) return;
+    const q = query(collection(db, 'comments'), where('dayId', '==', dayId), orderBy('createdAt', 'asc'));
+    unsubListeners[dayId] = onSnapshot(q, snap => {
+      const list = document.getElementById('list-' + dayId);
+      const badge = document.getElementById('badge-' + dayId);
+      if (!list) return;
+      snap.docs.forEach(d => { const n = d.data().userName; if (n && !allUsers.includes(n)) allUsers.push(n); });
+      if (currentUser?.displayName && !allUsers.includes(currentUser.displayName)) allUsers.push(currentUser.displayName);
+      if (snap.empty) {
+        list.innerHTML = '<div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div>';
+        badge.style.display = 'none';
+      } else {
+        badge.textContent = snap.size;
+        badge.style.display = 'inline';
+        list.innerHTML = snap.docs.map(docSnap => {
+          const d = docSnap.data();
+          const id = docSnap.id;
+          const isOwn = currentUser && d.userId === currentUser.uid;
+          const dt = d.createdAt ? new Date(d.createdAt.seconds * 1000) : null;
+          const dateStr = dt ? dt.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'2-digit'}) + ' ' + dt.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '';
+          const textHtml = (d.text||'').replace(/@([\w\s]+?)(?=\s|$|@)/g,'<span class="mention">@$1</span>');
+          const menu = isOwn ? `<div class="comment-menu-wrap"><button class="comment-menu-btn" onclick="toggleMenu('menu-${id}')">▾</button><div class="comment-dropdown" id="menu-${id}"><button onclick="editComment('${id}')">✏️ Editar</button><button class="del" onclick="deleteComment('${id}')">🗑️ Excluir</button></div></div>` : '';
+          return `<div class="comment-item" id="ci-${id}"><div class="comment-header"><div class="comment-meta"><span class="comment-author">${d.userName}</span><span class="comment-date">${dateStr}</span></div>${menu}</div><div class="comment-text" id="ct-${id}">${textHtml}</div></div>`;
+        }).join('');
+      }
+    }, err => console.error('Firestore:', err));
+  });
+}
 
 function toggleComments(btn, dayId) {
   const area = document.getElementById('comments-' + dayId);
@@ -1305,12 +1363,54 @@ function toggleComments(btn, dayId) {
   area.classList.toggle('open', !isOpen);
 }
 
-function openComments(dayId) {
-  const area = document.getElementById('comments-' + dayId);
-  const btn = area.previousElementSibling;
-  area.classList.add('open');
-  btn.classList.add('open');
-  document.getElementById('input-' + dayId)?.focus();
+function toggleMenu(menuId) {
+  document.querySelectorAll('.comment-dropdown.open').forEach(m => { if (m.id !== menuId) m.classList.remove('open'); });
+  document.getElementById(menuId)?.classList.toggle('open');
+}
+
+document.addEventListener('click', e => {
+  if (!e.target.closest('.comment-menu-wrap')) document.querySelectorAll('.comment-dropdown.open').forEach(m => m.classList.remove('open'));
+  if (!e.target.closest('.comment-form-wrap')) document.querySelectorAll('.mention-picker.open').forEach(p => p.classList.remove('open'));
+});
+
+function insertMention(dayId, userName) {
+  const input = document.getElementById('input-' + dayId);
+  const val = input.value;
+  const atIdx = val.lastIndexOf('@');
+  input.value = val.slice(0, atIdx) + '@' + userName + ' ';
+  document.getElementById('picker-' + dayId).classList.remove('open');
+  input.focus();
+}
+
+async function editComment(commentId) {
+  document.getElementById('menu-' + commentId)?.classList.remove('open');
+  const textEl = document.getElementById('ct-' + commentId);
+  const item = document.getElementById('ci-' + commentId);
+  const current = textEl.textContent;
+  item.classList.add('editing');
+  textEl.innerHTML = `<textarea class="comment-edit-area" id="edit-${commentId}" rows="2">${current}</textarea><div class="comment-edit-actions"><button class="comment-edit-cancel" onclick="cancelEdit('${commentId}','${current.replace(/'/g,\"\\'\")}')">Cancelar</button><button class="comment-edit-save" onclick="saveEdit('${commentId}')">Salvar</button></div>`;
+  document.getElementById('edit-' + commentId)?.focus();
+}
+
+async function saveEdit(commentId) {
+  const ta = document.getElementById('edit-' + commentId);
+  const newText = ta?.value.trim();
+  if (!newText) return;
+  try { await updateDoc(doc(db, 'comments', commentId), { text: newText, editedAt: serverTimestamp() }); }
+  catch(e) { alert('Erro ao editar: ' + e.message); }
+}
+
+function cancelEdit(commentId, original) {
+  const textEl = document.getElementById('ct-' + commentId);
+  const item = document.getElementById('ci-' + commentId);
+  item.classList.remove('editing');
+  textEl.innerHTML = original.replace(/@([\w\s]+?)(?=\s|$|@)/g,'<span class="mention">@$1</span>');
+}
+
+async function deleteComment(commentId) {
+  if (!confirm('Excluir este comentário?')) return;
+  try { await deleteDoc(doc(db, 'comments', commentId)); }
+  catch(e) { alert('Erro ao excluir: ' + e.message); }
 }
 
 async function sendComment(dayId) {
@@ -1320,22 +1420,22 @@ async function sendComment(dayId) {
   if (!text) return;
   const btn = input.nextElementSibling;
   btn.disabled = true;
+  document.getElementById('picker-' + dayId)?.classList.remove('open');
   try {
-    await addDoc(collection(db, 'comments'), {
-      dayId,
-      text,
-      userName: currentUser.displayName || currentUser.email,
-      userId: currentUser.uid,
-      createdAt: serverTimestamp()
-    });
+    await addDoc(collection(db, 'comments'), { dayId, text, userName: currentUser.displayName || currentUser.email, userId: currentUser.uid, createdAt: serverTimestamp() });
     input.value = '';
   } catch(e) { alert('Erro ao enviar: ' + e.message); }
   btn.disabled = false;
 }
 
-// expõe funções usadas nos onclick do HTML
 window.toggleComments = toggleComments;
 window.sendComment = sendComment;
+window.toggleMenu = toggleMenu;
+window.insertMention = insertMention;
+window.editComment = editComment;
+window.saveEdit = saveEdit;
+window.cancelEdit = cancelEdit;
+window.deleteComment = deleteComment;
 
 // ── TABS
 document.querySelectorAll('.tab-btn').forEach(btn => {
