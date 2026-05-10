@@ -192,12 +192,63 @@ a.pill-link.warn   {background:rgba(232,164,34,.1);color:#7a5800;border:1px soli
 .comments-toggle.open{background:rgba(44,62,107,.06);border-style:solid;border-color:rgba(44,62,107,.3);}
 .comments-toggle .toggle-icon{margin-left:auto;font-size:10px;transition:transform .2s;display:inline-block;}
 .comments-toggle.open .toggle-icon{transform:rotate(180deg);}
-.comments-toggle .badge-count{background:var(--clay);color:#fff;font-size:10px;padding:2px 7px;border-radius:100px;display:none;}
-.comments-area{display:none;margin-top:12px;border-radius:10px;overflow:hidden;border:1px solid rgba(44,62,107,.1);}
+.comments-toggle .badge-count{background:var(--clay);color:#fff;font-size:10px;padding:2px 7px;border-radius:100px;}
+.comments-area{display:none;margin-top:12px;border-radius:10px;overflow:hidden;border:1px solid rgba(44,62,107,.12);background:#fff;}
 .comments-area.open{display:block;}
-.comments-loading{padding:24px;text-align:center;font-size:13px;color:#aaa;}
-/* Utterances iframe override */
-.utterances{max-width:100%!important;margin:0!important;}
+.comments-inner{padding:16px;}
+.comment-list{display:flex;flex-direction:column;gap:10px;margin-bottom:14px;}
+.comment-item{background:#f7f4ee;border-radius:8px;padding:10px 14px;}
+.comment-meta{font-size:11px;color:#aaa;margin-bottom:4px;display:flex;gap:8px;}
+.comment-meta strong{color:var(--dusk);}
+.comment-text{font-size:13px;color:#333;line-height:1.5;}
+.comment-empty{font-size:13px;color:#bbb;text-align:center;padding:12px 0;}
+.comment-form{display:flex;gap:8px;margin-top:4px;}
+.comment-input{flex:1;border:1px solid #ddd;border-radius:8px;padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;outline:none;transition:border .2s;}
+.comment-input:focus{border-color:var(--dusk);}
+.comment-send{background:var(--dusk);color:#fff;border:none;border-radius:8px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;transition:background .2s;white-space:nowrap;}
+.comment-send:hover{background:var(--clay);}
+.comment-send:disabled{background:#ccc;cursor:not-allowed;}
+
+/* ── LOGIN PAGE ── */
+.login-page{min-height:100vh;display:flex;flex-wrap:wrap;}
+.login-left{flex:1;min-width:300px;background:var(--night);padding:60px 48px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden;}
+.login-left::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 70%,rgba(196,98,45,.2) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 20%,rgba(44,62,107,.35) 0%,transparent 60%);}
+.login-brand{position:relative;z-index:1;}
+.login-badge{display:inline-block;border:1px solid rgba(232,164,34,.4);color:var(--gold);font-size:11px;letter-spacing:3px;text-transform:uppercase;padding:6px 16px;border-radius:100px;margin-bottom:24px;background:rgba(232,164,34,.06);}
+.login-title{font-family:'Playfair Display',serif;font-size:clamp(52px,8vw,88px);font-weight:900;color:var(--sand);line-height:.92;letter-spacing:-2px;margin-bottom:8px;}
+.login-title em{font-style:italic;color:var(--clay);}
+.login-subtitle{font-family:'Playfair Display',serif;font-size:clamp(16px,2.5vw,22px);font-style:italic;color:var(--mist);}
+.login-stats{display:flex;gap:32px;position:relative;z-index:1;}
+.login-stat{text-align:left;}
+.ls-num{display:block;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--clay);line-height:1;}
+.ls-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(245,239,224,.4);}
+.login-right{flex:1;min-width:300px;background:var(--cream);display:flex;align-items:center;justify-content:center;padding:60px 48px;}
+.login-box{width:100%;max-width:360px;}
+.login-box-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--night);margin-bottom:4px;}
+.login-box-sub{font-size:13px;color:#888;margin-bottom:24px;line-height:1.5;}
+
+/* ── AUTH SHARED ── */
+.auth-tabs{display:flex;gap:0;margin-bottom:20px;border:1px solid #e0d8cc;border-radius:8px;overflow:hidden;}
+.auth-tab{flex:1;padding:9px;font-size:12px;font-weight:500;border:none;background:transparent;cursor:pointer;color:#888;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.auth-tab.active{background:var(--dusk);color:#fff;}
+.auth-field{width:100%;border:1px solid #ddd;border-radius:8px;padding:10px 14px;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:10px;outline:none;box-sizing:border-box;background:#fff;}
+.auth-field:focus{border-color:var(--dusk);}
+.auth-btn{width:100%;background:var(--clay);color:#fff;border:none;border-radius:8px;padding:12px;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;transition:background .2s;font-family:'DM Sans',sans-serif;}
+.auth-btn:hover{background:var(--canyon);}
+.auth-error{font-size:12px;color:#c0392b;margin-top:8px;text-align:center;min-height:18px;}
+
+/* ── USER BAR ── */
+.user-bar{background:var(--night);padding:10px 24px;display:none;align-items:center;justify-content:flex-end;gap:12px;font-size:12px;color:rgba(245,239,224,.5);}
+.user-bar.visible{display:flex;}
+.user-bar strong{color:var(--clay);}
+.user-bar button{background:none;border:1px solid rgba(245,239,224,.2);color:rgba(245,239,224,.5);border-radius:100px;padding:4px 12px;font-size:11px;cursor:pointer;transition:all .2s;font-family:'DM Sans',sans-serif;}
+.user-bar button:hover{border-color:var(--clay);color:var(--clay);}
+
+@media(max-width:600px){
+  .login-left{padding:40px 28px 32px;}
+  .login-right{padding:32px 28px;}
+  .login-stats{gap:20px;}
+}
 
 /* ── FOOTER ── */
 footer{background:var(--night);text-align:center;padding:40px 24px;font-size:12px;color:rgba(245,239,224,.25);letter-spacing:1px;}
@@ -218,6 +269,49 @@ footer span{color:var(--clay);}
 <body>
 
 <!-- HERO -->
+<!-- LOGIN PAGE -->
+<div id="login-page" style="display:flex;" class="login-page">
+  <div class="login-left">
+    <div class="login-brand">
+      <div class="login-badge">✈ Set / Out 2027</div>
+      <h1 class="login-title">Costa<br><em>Oeste</em></h1>
+      <p class="login-subtitle">de Motorhome pelos EUA</p>
+    </div>
+    <div class="login-stats">
+      <div class="login-stat"><span class="ls-num">15</span><span class="ls-label">Dias</span></div>
+      <div class="login-stat"><span class="ls-num">~1.900</span><span class="ls-label">Milhas</span></div>
+      <div class="login-stat"><span class="ls-num">5</span><span class="ls-label">Amigos</span></div>
+    </div>
+  </div>
+  <div class="login-right">
+    <div class="login-box">
+      <div class="login-box-title">Bem-vindo 👋</div>
+      <div class="login-box-sub">Entre ou crie sua conta para acessar o roteiro e deixar sugestões.</div>
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-mode="login">Entrar</button>
+        <button class="auth-tab" data-mode="register">Criar conta</button>
+      </div>
+      <div id="auth-name-wrap" style="display:none;">
+        <input class="auth-field" id="auth-name" placeholder="Seu nome" />
+        <input class="auth-field" id="auth-invite" type="password" placeholder="Código de convite" />
+      </div>
+      <input class="auth-field" id="auth-email" type="email" placeholder="E-mail" />
+      <input class="auth-field" id="auth-pass" type="password" placeholder="Senha (mín. 6 caracteres)" />
+      <button class="auth-btn" id="auth-btn">Entrar</button>
+      <div class="auth-error" id="auth-error"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APP (hidden until logged in) -->
+<div id="app-content" style="display:none;">
+
+<!-- USER BAR -->
+<div class="user-bar" id="user-bar">
+  Olá, <strong class="user-name"></strong>
+  <button id="btn-logout">Sair</button>
+</div>
+
 <section class="hero">
   <div class="hero-bg"></div><div class="stars"></div>
   <div class="hero-content">
@@ -1064,29 +1158,144 @@ footer span{color:var(--clay);}
   </div>
 </div><!-- /tab-gastos -->
 
+</div><!-- /app-content -->
+
 <footer>
   Roteiro planejado para setembro · outubro 2027 &nbsp;<span>·</span>&nbsp; Costa Oeste dos EUA de Motorhome
 </footer>
 
-<script>
-// ── CONFIG: atualize com seu usuário e nome do repositório no GitHub ──
-const UTTERANCES_REPO = 'SEU-USUARIO/nome-do-repo'; // ex: 'joao/viagem-eua-2027'
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, where, orderBy, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyDIiqVMyw3q_IDBqduSptLIuRMNoKrLoFI",
+  authDomain: "usa-trip-2027.firebaseapp.com",
+  projectId: "usa-trip-2027",
+  storageBucket: "usa-trip-2027.firebasestorage.app",
+  messagingSenderId: "124008475270",
+  appId: "1:124008475270:web:116cd27624e05527863f07"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+let currentUser = null;
+
+// ── AUTH STATE ──
+const loginPage = document.getElementById('login-page');
+const appContent = document.getElementById('app-content');
+const userBar = document.getElementById('user-bar');
+
+onAuthStateChanged(auth, user => {
+  currentUser = user;
+  if (user) {
+    loginPage.style.display = 'none';
+    appContent.style.display = 'block';
+    userBar.classList.add('visible');
+    userBar.querySelector('.user-name').textContent = user.displayName || user.email;
+  } else {
+    loginPage.style.display = 'flex';
+    appContent.style.display = 'none';
+    userBar.classList.remove('visible');
+  }
+});
+
+document.getElementById('btn-logout').addEventListener('click', () => signOut(auth));
+
+// ── AUTH TABS ──
+document.querySelectorAll('.auth-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('auth-name-wrap').style.display = tab.dataset.mode === 'register' ? 'block' : 'none';
+    document.getElementById('auth-btn').textContent = tab.dataset.mode === 'register' ? 'Criar conta' : 'Entrar';
+    document.getElementById('auth-error').textContent = '';
+  });
+});
+
+document.getElementById('auth-btn').addEventListener('click', async () => {
+  const mode = document.querySelector('.auth-tab.active').dataset.mode;
+  const name = document.getElementById('auth-name').value.trim();
+  const email = document.getElementById('auth-email').value.trim();
+  const pass = document.getElementById('auth-pass').value;
+  const errEl = document.getElementById('auth-error');
+  errEl.textContent = '';
+
+  // ── CÓDIGO DE CONVITE (altere para a senha do grupo) ──
+  const INVITE_CODE = 'usa2027';
+
+  try {
+    if (mode === 'register') {
+      if (!name) { errEl.textContent = 'Digite seu nome.'; return; }
+      const invite = document.getElementById('auth-invite').value.trim();
+      if (invite !== INVITE_CODE) { errEl.textContent = 'Código de convite inválido.'; return; }
+      const cred = await createUserWithEmailAndPassword(auth, email, pass);
+      await updateProfile(cred.user, { displayName: name });
+    } else {
+      await signInWithEmailAndPassword(auth, email, pass);
+    }
+  } catch(e) {
+    const msgs = {
+      'auth/email-already-in-use': 'E-mail já cadastrado.',
+      'auth/invalid-email': 'E-mail inválido.',
+      'auth/weak-password': 'Senha precisa ter pelo menos 6 caracteres.',
+      'auth/invalid-credential': 'E-mail ou senha incorretos.',
+      'auth/user-not-found': 'Usuário não encontrado.',
+      'auth/wrong-password': 'Senha incorreta.',
+    };
+    errEl.textContent = msgs[e.code] || 'Erro: ' + e.message;
+  }
+});
 
 // ── INJECT COMMENT SECTIONS ──
 document.querySelectorAll('.day-card').forEach((card, index) => {
   const dayNum = index + 1;
+  const dayId = 'dia-' + dayNum;
   const dayRight = card.querySelector('.day-right');
   const wrapper = document.createElement('div');
   wrapper.className = 'day-comments';
   wrapper.innerHTML = `
-    <button class="comments-toggle" onclick="toggleComments(this, 'dia-${dayNum}')">
+    <button class="comments-toggle" onclick="toggleComments(this, '${dayId}')">
       💬 Sugestões do grupo para o Dia ${dayNum}
+      <span class="badge-count" id="badge-${dayId}"></span>
       <span class="toggle-icon">▾</span>
     </button>
-    <div class="comments-area" id="comments-dia-${dayNum}">
-      <div class="comments-loading">Carregando comentários...</div>
+    <div class="comments-area" id="comments-${dayId}">
+      <div class="comments-inner">
+        <div class="comment-list" id="list-${dayId}"><div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div></div>
+        <div class="comment-form">
+          <input class="comment-input" id="input-${dayId}" placeholder="Digite sua sugestão..." />
+          <button class="comment-send" onclick="sendComment('${dayId}')">Enviar</button>
+        </div>
+      </div>
     </div>`;
   dayRight.appendChild(wrapper);
+
+  // live listener para comentários deste dia
+  const q = query(collection(db, 'comments'), where('dayId', '==', dayId), orderBy('createdAt', 'asc'));
+  onSnapshot(q, snap => {
+    const list = document.getElementById('list-' + dayId);
+    const badge = document.getElementById('badge-' + dayId);
+    if (!list) return;
+    if (snap.empty) {
+      list.innerHTML = '<div class="comment-empty">Nenhuma sugestão ainda. Seja o primeiro!</div>';
+      badge.style.display = 'none';
+    } else {
+      badge.textContent = snap.size;
+      badge.style.display = 'inline';
+      list.innerHTML = snap.docs.map(doc => {
+        const d = doc.data();
+        const date = d.createdAt ? new Date(d.createdAt.seconds * 1000).toLocaleDateString('pt-BR', {day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : '';
+        return `<div class="comment-item">
+          <div class="comment-meta"><strong>${d.userName}</strong><span>${date}</span></div>
+          <div class="comment-text">${d.text}</div>
+        </div>`;
+      }).join('');
+    }
+  });
 });
 
 function toggleComments(btn, dayId) {
@@ -1094,22 +1303,39 @@ function toggleComments(btn, dayId) {
   const isOpen = area.classList.contains('open');
   btn.classList.toggle('open', !isOpen);
   area.classList.toggle('open', !isOpen);
-
-  // Lazy load Utterances apenas na primeira abertura
-  if (!isOpen && !area.dataset.loaded) {
-    area.dataset.loaded = '1';
-    const script = document.createElement('script');
-    script.src = 'https://utteranc.es/client.js';
-    script.setAttribute('repo', UTTERANCES_REPO);
-    script.setAttribute('issue-term', dayId);          // cria uma Issue por dia
-    script.setAttribute('label', '💬 sugestão');
-    script.setAttribute('theme', 'github-light');
-    script.setAttribute('crossorigin', 'anonymous');
-    script.async = true;
-    area.innerHTML = ''; // remove loading text
-    area.appendChild(script);
-  }
 }
+
+function openComments(dayId) {
+  const area = document.getElementById('comments-' + dayId);
+  const btn = area.previousElementSibling;
+  area.classList.add('open');
+  btn.classList.add('open');
+  document.getElementById('input-' + dayId)?.focus();
+}
+
+async function sendComment(dayId) {
+  if (!currentUser) return;
+  const input = document.getElementById('input-' + dayId);
+  const text = input.value.trim();
+  if (!text) return;
+  const btn = input.nextElementSibling;
+  btn.disabled = true;
+  try {
+    await addDoc(collection(db, 'comments'), {
+      dayId,
+      text,
+      userName: currentUser.displayName || currentUser.email,
+      userId: currentUser.uid,
+      createdAt: serverTimestamp()
+    });
+    input.value = '';
+  } catch(e) { alert('Erro ao enviar: ' + e.message); }
+  btn.disabled = false;
+}
+
+// expõe funções usadas nos onclick do HTML
+window.toggleComments = toggleComments;
+window.sendComment = sendComment;
 
 // ── TABS
 document.querySelectorAll('.tab-btn').forEach(btn => {
